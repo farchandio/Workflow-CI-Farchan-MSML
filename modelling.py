@@ -26,7 +26,7 @@ mlflow.set_experiment("CI - Automated Training")
 
 # --- 2. Muat Data ---
 # Path ini relatif terhadap root repositori CI
-DATA_PATH = 'namadataset_preprocessing/data_bersih.csv'
+DATA_PATH = 'data_bersih.csv'
 df = pd.read_csv(DATA_PATH)
 
 X = df.drop('stroke', axis=1)
