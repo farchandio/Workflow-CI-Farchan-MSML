@@ -1,0 +1,16 @@
+name: smsml-ci-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.12.7 # Sesuai spesifikasi
+  - pip
+  - pip:
+    - mlflow==2.19.0 # Sesuai spesifikasi
+    - pandas
+    - scikit-learn
+    - dagshub
+    - matplotlib
+    # Tambahkan library lain dari model Anda jika perlu
+    # (contoh: xgboost, lightgbm, dll.)
+    - RandomForestClassifier # Ini sebenarnya bagian dari scikit-learn
