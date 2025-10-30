@@ -31,7 +31,9 @@ jobs:
 
       # --- TAHAP SKILLED: Menjalankan MLProject ---
       - name: Jalankan MLflow Project (Re-training)
-        run: mlflow run .
+        run: |
+          eval "$(conda shell.bash hook)"
+          mlflow run .
         # Ini akan otomatis membaca MLProject, membuat conda.yaml,
         # dan menjalankan 'python modelling.py'
 
