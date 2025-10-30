@@ -1,1 +1,10 @@
+name: SMSML-CI-Project
 
+# Menentukan environment yang akan digunakan
+conda_env: conda.yaml
+
+# Mendefinisikan titik masuk (entry point)
+entry_points:
+  main:
+    # Perintah yang akan dijalankan saat 'mlflow run .'
+    command: "python modelling.py"
