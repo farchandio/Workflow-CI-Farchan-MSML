@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score
 print("Memulai skrip training CI/MLProject...")
 print(f"MLFLOW_TRACKING_URI diatur ke: {os.environ.get('MLFLOW_TRACKING_URI')}")
 
-mlflow.set_experiment("CI - Automated Training")
+# HAPUS BARIS 'set_experiment' DARI SINI
 
 # --- 2. Muat Data ---
 DATA_PATH = 'data_bersih.csv' 
@@ -20,15 +20,12 @@ y = df['stroke']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # --- 3. Training Model (TANPA autolog) ---
-
-# Tentukan parameter secara manual
 params = {
     'n_estimators': 100,
     'max_depth': 10,
     'class_weight': 'balanced',
     'random_state': 42
 }
-
 model = RandomForestClassifier(**params)
 
 print("Melatih model...")
@@ -40,15 +37,13 @@ acc = accuracy_score(y_test, preds)
 print(f"Training CI Selesai. Akurasi: {acc:.4f}")
 
 # --- 4. Logging Manual ---
-# 'mlflow run .' sudah membuatkan run, kita hanya perlu log ke run itu.
-
+# Konteks run sekarang diatur oleh 'mlflow run --experiment-name'
 print("Logging parameter dan metrik secara manual...")
 mlflow.log_params(params)
 mlflow.log_metric("accuracy", acc)
 mlflow.sklearn.log_model(model, "model")
 
 # --- 5. Simpan Run ID ---
-# Sekarang 'active_run()' seharusnya sudah bisa ditemukan
 run = mlflow.active_run()
 if run:
     run_id = run.info.run_id
