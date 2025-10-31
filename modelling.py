@@ -9,7 +9,6 @@ from sklearn.metrics import accuracy_score
 print("Memulai skrip training CI/MLProject...")
 print(f"MLFLOW_TRACKING_URI diatur ke: {os.environ.get('MLFLOW_TRACKING_URI')}")
 
-# Set eksperimen. 'mlflow run' akan otomatis menggunakan ini.
 mlflow.set_experiment("CI - Automated Training")
 
 # --- 2. Muat Data ---
@@ -20,19 +19,17 @@ X = df.drop('stroke', axis=1)
 y = df['stroke']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# --- 3. Mulai MLflow Run ---
-# KITA TIDAK PERLU 'with mlflow.start_run()'
-# 'mlflow run .' sudah membuatkan run untuk kita.
-# Kita hanya perlu log ke run yang sedang aktif.
-    
-mlflow.sklearn.autolog() # Autolog akan otomatis mencatat ke run yang aktif
+# --- 3. Training Model (TANPA autolog) ---
 
-model = RandomForestClassifier(
-    n_estimators=100, 
-    max_depth=10, 
-    class_weight='balanced',
-    random_state=42
-)
+# Tentukan parameter secara manual
+params = {
+    'n_estimators': 100,
+    'max_depth': 10,
+    'class_weight': 'balanced',
+    'random_state': 42
+}
+
+model = RandomForestClassifier(**params)
 
 print("Melatih model...")
 model.fit(X_train, y_train)
@@ -42,11 +39,24 @@ acc = accuracy_score(y_test, preds)
 
 print(f"Training CI Selesai. Akurasi: {acc:.4f}")
 
-# --- 4. Simpan Run ID ---
-# Dapatkan ID dari run yang sedang aktif (dibuat oleh 'mlflow run .')
-run_id = mlflow.active_run().info.run_id
-with open("run_id.txt", "w") as f:
-    f.write(run_id)
-print(f"Run ID disimpan: {run_id}")
+# --- 4. Logging Manual ---
+# 'mlflow run .' sudah membuatkan run, kita hanya perlu log ke run itu.
+
+print("Logging parameter dan metrik secara manual...")
+mlflow.log_params(params)
+mlflow.log_metric("accuracy", acc)
+mlflow.sklearn.log_model(model, "model")
+
+# --- 5. Simpan Run ID ---
+# Sekarang 'active_run()' seharusnya sudah bisa ditemukan
+run = mlflow.active_run()
+if run:
+    run_id = run.info.run_id
+    with open("run_id.txt", "w") as f:
+        f.write(run_id)
+    print(f"Run ID disimpan: {run_id}")
+else:
+    print("Error: Tidak dapat menemukan active run!")
+    exit(1) # Keluar dengan error jika run tidak ditemukan
 
 print("Skrip CI selesai.")
